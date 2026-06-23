@@ -71,7 +71,7 @@ export default function Navbar() {
 
                 <Link
                   href={`/dashboard/${user?.role}`}
-                  className={`font-display text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 relative py-1
+                  className={`hidden lg:flex font-display text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 relative py-1
                     ${isActive(`/dashboard/${user?.role}`) ? "text-flexuraNeon" : "text-zinc-400 hover:text-white"}`}
                 >
                   Dashboard

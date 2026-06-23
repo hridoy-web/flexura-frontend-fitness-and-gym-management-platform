@@ -3,7 +3,7 @@ import Link from "next/link";
 import { FaThumbsUp, FaRegComment, FaCalendarAlt, FaChevronRight, FaShieldAlt, FaUserCheck } from "react-icons/fa";
 
 export default function ForumCard({ post }) {
-    // 🛠️ ইউজারের রোল অনুযায়ী ব্যাজ ও কালার ডিফাইন করার লজিক
+  
     const renderRoleBadge = (role) => {
         if (role === "admin") {
             return (
@@ -19,13 +19,12 @@ export default function ForumCard({ post }) {
                 </span>
             );
         }
-        return null; // সাধারণ ইউজার হলে আলাদা ব্যাজ লাগবে না
+        return null; 
     };
 
     return (
         <div className="bg-zinc-900/40 border border-zinc-800/80 backdrop-blur-md group hover:border-flexuraPurple/50 transition-all duration-300 flex flex-col justify-between relative w-full overflow-hidden">
             
-            {/* 📸 ১. পোস্ট ইমেজ (যদি পোস্টে ইমেজ থাকে) */}
             {post.postImage && (
                 <div className="relative h-40 w-full overflow-hidden bg-zinc-950 border-b border-zinc-800/50">
                     <img 
@@ -39,7 +38,7 @@ export default function ForumCard({ post }) {
             {/* Content Area */}
             <div className="p-5 flex-grow flex flex-col justify-between">
                 <div>
-                    {/* Header: User Meta, Role badge & Category */}
+                    {/* Header*/}
                     <div className="flex items-start justify-between gap-2 mb-4">
                         <div className="flex items-center gap-2">
                             <img 
@@ -50,7 +49,6 @@ export default function ForumCard({ post }) {
                             <div>
                                 <div className="flex items-center gap-1.5">
                                     <h4 className="text-xs font-bold text-zinc-300 truncate max-w-[90px]">{post.userName}</h4>
-                                    {/* 🛠️ ২. রোল চেক সেকশন */}
                                     {renderRoleBadge(post.userRole)}
                                 </div>
                                 <p className="text-[10px] text-zinc-500 flex items-center gap-1 mt-0.5">
@@ -69,13 +67,13 @@ export default function ForumCard({ post }) {
                         {post.title}
                     </h3>
 
-                    {/* Post Description Snippet */}
+                    {/* Post Description */}
                     <p className="text-xs text-zinc-400 font-sans line-clamp-2 mb-4 leading-relaxed">
                         {post.description}
                     </p>
                 </div>
 
-                {/* Footer: Votes, Comments & Read Button */}
+                {/* Footer */}
                 <div className="border-t border-zinc-800/60 pt-3 mt-4 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                         {/* Upvotes */}
@@ -100,7 +98,7 @@ export default function ForumCard({ post }) {
                 </div>
             </div>
 
-            {/* Tech Corner Accent */}
+            {/* Tech Corner  */}
             <div className="absolute top-0 right-0 w-1.5 h-1.5 bg-zinc-800 group-hover:bg-flexuraPurple transition-colors" />
         </div>
     );

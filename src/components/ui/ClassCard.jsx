@@ -6,14 +6,14 @@ export default function ClassCard({ item }) {
     return (
         <div className="bg-zinc-900/40 border border-zinc-800/80 backdrop-blur-md group hover:border-flexuraNeon/50 transition-all duration-300 flex flex-col relative w-full">
             
-            {/* Card Image Area with Hot Badge */}
+            {/* Card Image  */}
             <div className="relative h-52 w-full overflow-hidden bg-zinc-950">
                 <img 
                     src={item.image} 
                     alt={item.className}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" // original color kept 🎨
+                    className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500" 
                 />
-                {/* Booking Count Hot Badge */}
+                {/* Booking Count  */}
                 <div className="absolute top-4 left-4 bg-zinc-950/90 border border-flexuraNeon/40 px-2.5 py-1 flex items-center gap-1.5 backdrop-blur-sm">
                     <span className="w-1.5 h-1.5 rounded-full bg-flexuraNeon animate-ping" />
                     <span className="font-display text-[10px] font-black tracking-wider text-flexuraNeon uppercase">
@@ -62,7 +62,7 @@ export default function ClassCard({ item }) {
                 </div>
             </div>
 
-            {/* Decorative Corner Line for Cyber Vibe */}
+            {/* Decorative Corner Line  */}
             <div className="absolute bottom-0 right-0 w-2 h-2 bg-zinc-800 group-hover:bg-flexuraNeon transition-colors" />
         </div>
     );
