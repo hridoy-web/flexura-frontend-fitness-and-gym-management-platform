@@ -1,14 +1,26 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image"; // 👈 Next.js Image কম্পোনেন্ট ইমপোর্ট করা হলো
-import { usePathname } from "next/navigation";
-import { HiMenuAlt3 } from "react-icons/hi"; 
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { HiMenuAlt3 } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
-export default function Navbar({ user, handleLogout }) {
+export default function Navbar() {
+  const router = useRouter()
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+
+  const { data: session } = authClient.useSession();
+  const user = session?.user;
+
+  // console.log(user);
+
+  const handleLogOut = async () => {
+    await authClient.signOut()
+    router.push('/login')
+  }
 
   const navLinks = [
     { name: "Home", path: "/" },
@@ -22,7 +34,7 @@ export default function Navbar({ user, handleLogout }) {
     <nav className="bg-zinc-950/80 backdrop-blur-xl border-b border-zinc-900/80 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          
+
           {/* Logo Section */}
           <div className="shrink-0">
             <Link href="/" className="group">
@@ -39,8 +51,8 @@ export default function Navbar({ user, handleLogout }) {
                 key={link.path}
                 href={link.path}
                 className={`font-display text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 relative py-1
-                  ${isActive(link.path) 
-                    ? "text-flexuraNeon" 
+                  ${isActive(link.path)
+                    ? "text-flexuraNeon"
                     : "text-zinc-400 hover:text-white"
                   }
                   after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:bg-flexuraNeon after:transition-all after:duration-300
@@ -56,7 +68,7 @@ export default function Navbar({ user, handleLogout }) {
           <div className="hidden md:flex items-center gap-5">
             {user ? (
               <div className="flex items-center gap-6">
-              
+
                 <Link
                   href={`/dashboard/${user?.role}`}
                   className={`font-display text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 relative py-1
@@ -69,10 +81,10 @@ export default function Navbar({ user, handleLogout }) {
                 <div className="dropdown dropdown-end dropdown-hover">
                   <label tabIndex={0} className="btn btn-ghost btn-circle avatar ring-2 ring-flexuraNeon/30 hover:ring-flexuraNeon shadow-[0_0_15px_rgba(0,240,255,0.1)] transition-all duration-300">
                     <div className="w-10 h-10 rounded-full overflow-hidden relative">
-                      
-                      <Image 
-                        src={user?.image || "/default-avatar.png"} 
-                        alt="User Profile" 
+
+                      <Image
+                        src={user?.image || "/default-avatar.png"}
+                        alt="User Profile"
                         width={40}
                         height={40}
                         priority={true}
@@ -80,7 +92,7 @@ export default function Navbar({ user, handleLogout }) {
                       />
                     </div>
                   </label>
-                  
+
                   <ul tabIndex={0} className="menu menu-sm dropdown-content mt-0 z-[1] p-2 shadow-[0_10px_30px_rgba(0,0,0,0.5)] bg-zinc-900 border border-zinc-800 rounded-none w-56 text-zinc-200 backdrop-blur-md">
                     <li className="px-4 py-3 border-b border-zinc-800 font-sans pointer-events-none">
                       <p className="font-bold text-white truncate text-sm">{user?.name}</p>
@@ -92,7 +104,7 @@ export default function Navbar({ user, handleLogout }) {
                       </Link>
                     </li>
                     <li>
-                      <button onClick={handleLogout} className="text-red-400 font-medium font-sans py-2.5 hover:bg-red-500/10 rounded-none">
+                      <button onClick={handleLogOut} className="text-red-400 font-medium font-sans py-2.5 hover:bg-red-500/10 rounded-none">
                         Logout
                       </button>
                     </li>
@@ -143,7 +155,7 @@ export default function Navbar({ user, handleLogout }) {
               {link.name}
             </Link>
           ))}
-          
+
           {user && (
             <Link
               href={`/dashboard/${user?.role}`}
@@ -160,10 +172,10 @@ export default function Navbar({ user, handleLogout }) {
               <div className="flex items-center justify-between px-4 py-2 bg-zinc-900/40 border border-zinc-900 font-sans">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-full overflow-hidden relative ring-2 ring-flexuraNeon">
-                   
-                    <Image 
-                      src={user?.image || "/default-avatar.png"} 
-                      alt="Profile" 
+
+                    <Image
+                      src={user?.image || "/default-avatar.png"}
+                      alt="Profile"
                       width={40}
                       height={40}
                       className="object-cover w-full h-full"
@@ -174,7 +186,7 @@ export default function Navbar({ user, handleLogout }) {
                     <p className="text-[10px] text-zinc-500 uppercase tracking-wider font-display">{user?.role}</p>
                   </div>
                 </div>
-                <button onClick={() => { handleLogout(); setIsOpen(false); }} className="text-red-400 text-xs font-bold uppercase tracking-wider underline hover:text-red-300">
+                <button onClick={() => { handleLogOut, setIsOpen(false); }} className="text-red-400 text-xs font-bold uppercase tracking-wider underline hover:text-red-300">
                   Logout
                 </button>
               </div>
