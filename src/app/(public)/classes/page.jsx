@@ -4,21 +4,34 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaSearch, FaDumbbell, FaSpinner } from "react-icons/fa";
 import AllClassesCard from "@/components/ui/AllClassesCard";
-import { getAllClasses } from "@/lib/actions/homeActions";
-
+import { getPaginatedClasses } from "@/lib/actions/classActions";
 
 export default function AllClassesPage() {
+
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedCategory, setSelectedCategory] = useState("All");
     const [classes, setClasses] = useState([]);
     const [loading, setLoading] = useState(true);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const limit = 9; 
+
     useEffect(() => {
+
         const fetchClassesData = async () => {
             setLoading(true);
-            const data = await getAllClasses(searchQuery, selectedCategory);
-            // console.log(data);
-            setClasses(data || []);
+
+            const response = await getPaginatedClasses({
+                page: currentPage,
+                limit,
+                search: searchQuery,
+                category: selectedCategory
+            });
+            
+            setClasses(response.data || []);
+
+            setTotalPages(response.totalPage || 1);
             setLoading(false);
         };
 
@@ -27,10 +40,20 @@ export default function AllClassesPage() {
         }, 400);
 
         return () => clearTimeout(delayDebounce);
-    }, [searchQuery, selectedCategory]);
+    }, [currentPage, searchQuery, selectedCategory]);
 
 
-    const categories = ["All", "Home Workout", "Weights", "Yoga", "Cardio"];
+    const categories = ["All", "Home Workout", "Six Pack", "Fat Loss", "Yoga", "Cardio"];
+
+    const handleCategoryChange = (cat) => {
+        setSelectedCategory(cat);
+        setCurrentPage(1); 
+    };
+
+    const handleSearchChange = (e) => {
+        setSearchQuery(e.target.value);
+        setCurrentPage(1);
+    };
 
     return (
         <main className="min-h-screen bg-zinc-950 text-white py-18 px-4 sm:px-6 relative overflow-hidden">
@@ -63,7 +86,7 @@ export default function AllClassesPage() {
                             type="text"
                             placeholder="Search classes by name..."
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onChange={handleSearchChange}
                             className="w-full bg-zinc-950 border border-zinc-800 py-3 pl-11 pr-4 text-xs font-sans text-white placeholder-zinc-600 focus:outline-none focus:border-flexuraNeon transition-all duration-300 rounded-none"
                         />
                     </div>
@@ -73,7 +96,7 @@ export default function AllClassesPage() {
                         {categories.map((cat) => (
                             <button
                                 key={cat}
-                                onClick={() => setSelectedCategory(cat)}
+                                onClick={() => handleCategoryChange(cat)}
                                 className={`px-4 py-2 text-[10px] font-display font-black tracking-widest uppercase transition-all duration-200 border ${
                                     selectedCategory === cat
                                         ? "bg-flexuraNeon text-black border-flexuraNeon"
@@ -93,18 +116,59 @@ export default function AllClassesPage() {
                         <p className="text-zinc-200 text-xs font-display uppercase tracking-widest animate-pulse">Synchronizing Classes...</p>
                     </div>
                 ) : classes.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                        {classes.map((item, index) => (
-                            <motion.div
-                                key={item._id}
-                                initial={{ opacity: 0, y: 15 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.3, delay: index * 0.04 }}
+                    <>
+   
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {classes.map((item, index) => (
+                                <motion.div
+                                    key={item._id}
+                                    initial={{ opacity: 0, y: 15 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.3, delay: index * 0.04 }}
+                                >
+                                    <AllClassesCard item={item} />
+                                </motion.div>
+                            ))}
+                        </div>
+
+                        <div className="flex justify-center items-center gap-2 mt-16 border-t border-zinc-900/60 pt-10">
+                            {/* PREV BUTTON */}
+                            <button
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage((prev) => prev - 1)}
+                                className="px-5 py-3 text-[10px] font-display font-black tracking-widest uppercase bg-zinc-950 border border-zinc-800 text-zinc-300 disabled:opacity-20 disabled:pointer-events-none hover:border-flexuraNeon hover:text-white transition-all duration-300 transform active:scale-[0.97]"
                             >
-                                <AllClassesCard item={item} />
-                            </motion.div>
-                        ))}
-                    </div>
+                                PREV
+                            </button>
+
+                            {/* DYNAMIC PAGE NUMBERS */}
+                            {[...Array(totalPages)].map((_, index) => {
+                                const pageNum = index + 1;
+                                return (
+                                    <button
+                                        key={pageNum}
+                                        onClick={() => setCurrentPage(pageNum)}
+                                        className={`w-10 h-10 text-[11px] font-display font-black transition-all duration-300 transform active:scale-[0.95] ${
+                                            currentPage === pageNum
+                                                ? "bg-flexuraNeon text-black font-black shadow-lg shadow-flexuraNeon/20"
+                                                : "bg-zinc-950 text-zinc-300 border border-zinc-900 hover:border-zinc-700 hover:text-zinc-300"
+                                        }`}
+                                    >
+                                        {pageNum}
+                                    </button>
+                                );
+                            })}
+
+                            {/* NEXT BUTTON */}
+                            <button
+                                disabled={currentPage === totalPages}
+                                onClick={() => setCurrentPage((prev) => prev + 1)}
+                                className="px-5 py-3 text-[10px] font-display font-black tracking-widest uppercase bg-zinc-950 border border-zinc-800 text-zinc-400 disabled:opacity-20 disabled:pointer-events-none hover:border-flexuraNeon hover:text-white transition-all duration-300 transform active:scale-[0.97]"
+                            >
+                                NEXT
+                            </button>
+                        </div>
+                    </>
                 ) : (
                     <div className="text-center py-16 bg-zinc-900/10 border border-zinc-900/60 border-dashed p-4">
                         <p className="font-display text-xs font-bold tracking-widest uppercase text-zinc-500">
