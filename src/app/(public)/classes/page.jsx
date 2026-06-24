@@ -17,7 +17,7 @@ export default function AllClassesPage() {
         const fetchClassesData = async () => {
             setLoading(true);
             const data = await getAllClasses(searchQuery, selectedCategory);
-            console.log(data);
+            // console.log(data);
             setClasses(data || []);
             setLoading(false);
         };
@@ -90,7 +90,7 @@ export default function AllClassesPage() {
                 {loading ? (
                     <div className="flex flex-col items-center justify-center py-24 gap-3">
                         <FaSpinner className="text-flexuraNeon animate-spin" size={30} />
-                        <p className="text-zinc-500 text-[10px] font-display uppercase tracking-widest animate-pulse">Syncing catalog...</p>
+                        <p className="text-zinc-200 text-xs font-display uppercase tracking-widest animate-pulse">Synchronizing Classes...</p>
                     </div>
                 ) : classes.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

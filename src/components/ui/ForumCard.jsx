@@ -121,9 +121,9 @@ export default function ForumCard({ post }) {
                     {/* Read Post Link */}
                     <Link
                         href={`/forum/${_id}`}
-                        className="font-display text-[9px] font-black tracking-widest uppercase text-zinc-400 hover:text-flexuraPurple flex items-center gap-1 transition-colors group/btn"
+                        className="font-display text-[11px] font-black tracking-widest uppercase bg-zinc-950 border border-zinc-800 text-zinc-200 py-3 px-5 rounded-none hover:bg-gradient-to-r hover:from-flexuraNeon hover:to-flexuraPurple hover:text-white hover:border-transparent transition-all duration-300 transform active:scale-[0.98] flex items-center gap-2"
                     >
-                        READ POST <FaChevronRight size={7} className="transform group-hover/btn:translate-x-1 transition-transform" />
+                        READ POST <FaChevronRight size={11} className="transform group-hover/btn:translate-x-1 transition-transform" />
                     </Link>
                 </div>
             </div>

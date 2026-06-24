@@ -16,6 +16,7 @@ export const fetchFromBackend = async (path, options) => {
         if (!res.ok) return null;
 
         const result = await res.json();
+        
         return result.success ? result.data : null;
 
     } catch (error) {
