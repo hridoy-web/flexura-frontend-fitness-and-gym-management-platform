@@ -10,8 +10,6 @@ export default async function HomePage() {
   const latestForumPosts = await getForumPosts() || []
   // console.log(latestForumPosts);
 
-
-
   return (
     <div>
       <HeroBanner />
