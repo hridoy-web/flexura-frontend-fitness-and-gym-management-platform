@@ -3,40 +3,8 @@ import Link from "next/link";
 import { FaFire, FaChevronRight } from "react-icons/fa";
 import ClassCard from "../ui/ClassCard";
 
-const mockClasses = [
-    {
-        _id: "class1",
-        className: "Cyber Strength & Conditioning",
-        trainerName: "Alex Mercer",
-        category: "Weights",
-        price: 49,
-        duration: "60 mins",
-        bookingCount: 142,
-        image: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=600&auto=format&fit=crop"
-    },
-    {
-        _id: "class2",
-        className: "Neon Flow Yoga",
-        trainerName: "Seraphina Vane",
-        category: "Yoga",
-        price: 35,
-        duration: "45 mins",
-        bookingCount: 98,
-        image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=600&auto=format&fit=crop"
-    },
-    {
-        _id: "class3",
-        className: "Hyperdrive Cardio Blast",
-        trainerName: "Jaxson Reed",
-        category: "Cardio",
-        price: 40,
-        duration: "50 mins",
-        bookingCount: 87,
-        image: "https://images.unsplash.com/photo-1518481612222-68bbe828ecd1?q=80&w=600&auto=format&fit=crop"
-    }
-];
 
-export default function FeaturedClasses() {
+export default function FeaturedClasses({ featuredClasses }) {
     return (
         <section className="bg-zinc-950 text-white py-16 sm:py-24 relative overflow-hidden px-4">
             {/* Background */}
@@ -54,8 +22,8 @@ export default function FeaturedClasses() {
                             FEATURED <span className="text-transparent bg-clip-text bg-gradient-to-r from-flexuraNeon to-flexuraPurple">CLASSES</span>
                         </h2>
                     </div>
-                    <Link 
-                        href="/classes" 
+                    <Link
+                        href="/classes"
                         className="font-display text-xs font-bold tracking-widest uppercase text-zinc-400 hover:text-flexuraNeon transition-colors flex items-center gap-1.5 group"
                     >
                         VIEW ALL CLASSES <FaChevronRight size={10} className="transform group-hover:translate-x-1 transition-transform" />
@@ -64,7 +32,7 @@ export default function FeaturedClasses() {
 
                 {/* Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {mockClasses.map((item) => (
+                    {featuredClasses.map((item) => (
                         <ClassCard key={item._id} item={item} />
                     ))}
                 </div>

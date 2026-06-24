@@ -30,7 +30,7 @@ export default function ClassCard({ item }) {
                 </div>
 
                 {/* Class Title */}
-                <h3 className="font-display text-xl font-black uppercase italic tracking-wide group-hover:text-flexuraNeon transition-colors line-clamp-1 mb-4">
+                <h3 className="font-display text-xl font-black uppercase italic tracking-wide group-hover:text-flexuraNeon transition-colors mb-4 ">
                     {item.className}
                 </h3>
 

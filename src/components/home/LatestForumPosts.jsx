@@ -3,49 +3,7 @@ import Link from "next/link";
 import { FaComments, FaArrowRight } from "react-icons/fa";
 import ForumCard from "../ui/ForumCard";
 
-const mockPosts = [
-    {
-        _id: "post1",
-        title: "Hypertrophy Blueprint: Science of Muscle Growth",
-        description: "Master the mechanics of progressive overload. Our elite training staff breaks down the optimal set-to-rep ratios and recovery protocols required to shatter genetic plateaus.",
-        userName: "Hridoy",
-        userImage: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop",
-        userRole: "admin", 
-        category: "Training",
-        postImage: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=600&auto=format&fit=crop", 
-        upvotes: 184,
-        commentsCount: 42,
-        createdAt: "10 mins ago"
-    },
-    {
-        _id: "post2",
-        title: "Fixing Lumbar Flexion During Heavy Squats",
-        description: "Are you suffering from lower back pain or 'butt wink' at the bottom of your squats? Let's analyze hip anatomy, ankle mobility, and proper bracing techniques to safeguard your spine.",
-        userName: "Alex Mercer",
-        userImage: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?q=80&w=100&auto=format&fit=crop",
-        userRole: "trainer", 
-        category: "Biomechanics",
-        postImage: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=600&auto=format&fit=crop", 
-        upvotes: 112,
-        commentsCount: 29,
-        createdAt: "2 hours ago"
-    },
-    {
-        _id: "post4",
-        title: "Anabolic Kitchen: High-Protein Meal Prep Guide",
-        description: "Hit your daily macro targets effortlessly. Here are 5 calorie-efficient, meal-prep friendly recipes packed with micronutrients to fuel high-intensity training sessions.",
-        userName: "Seraphina Vane",
-        userImage: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=100&auto=format&fit=crop",
-        userRole: "trainer", 
-        category: "Nutrition",
-        postImage: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=600&auto=format&fit=crop", 
-        upvotes: 95,
-        commentsCount: 18,
-        createdAt: "1 day ago"
-    }
-];
-
-export default function LatestForumPosts() {
+export default function LatestForumPosts({latestForumPosts}) {
     return (
         <section className="bg-zinc-950 text-white py-16 sm:py-24 relative overflow-hidden px-4 border-t border-zinc-900">
             {/* Ambient Purple Glow */}
@@ -69,7 +27,7 @@ export default function LatestForumPosts() {
 
                 {/* Posts Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                    {mockPosts.map((post) => (
+                    {latestForumPosts.map((post) => (
                         <ForumCard key={post._id} post={post} />
                     ))}
                 </div>
