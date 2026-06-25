@@ -42,7 +42,6 @@ export default function AllClassesPage() {
         return () => clearTimeout(delayDebounce);
     }, [currentPage, searchQuery, selectedCategory]);
 
-
     const categories = ["All", "Home Workout", "Six Pack", "Fat Loss", "Yoga", "Cardio"];
 
     const handleCategoryChange = (cat) => {

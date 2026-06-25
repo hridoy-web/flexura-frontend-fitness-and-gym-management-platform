@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image"; 
+import Image from "next/image";
 import { FaRegClock, FaUserCircle, FaUsers } from "react-icons/fa";
 
 export default function AllClassesCard({ item }) {
@@ -23,14 +23,13 @@ export default function AllClassesCard({ item }) {
 
             {/* 1. IMAGE SECTION */}
             <div className="relative h-52 w-full overflow-hidden bg-zinc-950">
-                
+
                 <Image
-                    src={image || "/public/images/flexura_gym_image.jpg"} 
+                    src={image || "/public/images/flexura_gym_image.jpg"}
                     alt={className || "Fitness Class"}
-                    fill 
-                    sizes="(max-w-768px) 100vw, (max-w-1200px) 50vw, 33vw" 
-                    className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100"
-                    priority={false} 
+                    fill
+                    priority={true}
+                    className="object-cover w-full h-full"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-60 z-10" />
 
@@ -54,7 +53,7 @@ export default function AllClassesCard({ item }) {
                         {className}
                     </h3>
                     <p className="text-zinc-500 flex gap-2 text-sm font-sans mt-3">
-                      <FaUserCircle size={20} /> By Trainer: <span className="text-zinc-300 font-medium">{trainerName || "Expert Trainer"}</span>
+                        <FaUserCircle size={20} /> By Trainer: <span className="text-zinc-300 font-medium">{trainerName || "Expert Trainer"}</span>
                     </p>
                 </div>
 

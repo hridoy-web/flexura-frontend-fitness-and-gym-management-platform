@@ -1,6 +1,5 @@
 "use client";
 import Link from "next/link";
-import Image from "next/image"; 
 import { FaThumbsUp, FaRegComment, FaCalendarAlt, FaChevronRight, FaShieldAlt, FaUserCheck, FaUserCircle } from "react-icons/fa";
 
 export default function ForumCard({ post }) {
@@ -37,7 +36,7 @@ export default function ForumCard({ post }) {
                 </span>
             );
         }
-        if (role === "trainer") {
+        if (role === "trainer") {        
             return (
                 <span className="flex items-center gap-1 text-[9px] font-bold text-flexuraNeon bg-flexuraNeon/10 border border-flexuraNeon/20 px-1.5 py-0.5 uppercase tracking-wider">
                     <FaUserCheck size={8} /> Trainer
@@ -53,13 +52,11 @@ export default function ForumCard({ post }) {
             {/* Post Image Container */}
             {image && (
                 <div className="relative h-40 w-full overflow-hidden bg-zinc-950 border-b border-zinc-800/50">
-                    <Image
+                    <img
                         src={image}
                         alt={title || "Forum Post"}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        priority={false}
+                        loading="lazy"
+                        className="w-full h-full object-cover"
                     />
                 </div>
             )}
@@ -70,7 +67,7 @@ export default function ForumCard({ post }) {
                     {/* Header  */}
                     <div className="flex items-start justify-between gap-2 mb-4">
                         <div className="flex items-center gap-2">
-                         <FaUserCircle size={32} />
+                            <FaUserCircle size={32} />
                             {/* <div className="relative w-8 h-8 rounded-full overflow-hidden border border-zinc-800">
                                 <Image
                                     src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=100&auto=format&fit=crop"
