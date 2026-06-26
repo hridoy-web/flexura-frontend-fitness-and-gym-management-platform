@@ -2,7 +2,8 @@
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import { getSingleClass, checkIsFavorite, toggleFavorite } from "@/lib/actions/classActions";
-import { FaCalendarAlt, FaClock, FaHeart, FaRegHeart, FaUser, FaDumbbell, FaArrowLeft, FaCheckCircle, FaSpinner, FaUsers, FaBookOpen } from "react-icons/fa";
+import { checkBookingStatus } from "@/lib/actions/bookingActions"; 
+import { FaCalendarAlt, FaClock, FaHeart, FaRegHeart, FaUser, FaDumbbell, FaArrowLeft, FaSpinner, FaUsers, FaBookOpen, FaCheckCircle } from "react-icons/fa";
 import toast from "react-hot-toast";
 
 export default function ClassDetailsPage({ params: paramsPromise }) {
@@ -15,6 +16,8 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
     const [loading, setLoading] = useState(true);
     const [isFavorite, setIsFavorite] = useState(false);
     const [favoriteLoading, setFavoriteLoading] = useState(false);
+    const [bookingLoading, setBookingLoading] = useState(false); 
+
     const [isAlreadyBooked, setIsAlreadyBooked] = useState(false);
 
     useEffect(() => {
@@ -30,8 +33,14 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
                     setCurrentUser(response.user);
 
                     if (response.user?.email) {
+
                         const favStatus = await checkIsFavorite(classId, response.user.email);
                         setIsFavorite(favStatus);
+
+                        const checkData = await checkBookingStatus(classId, response.user.email);
+                        if (checkData.success && checkData.booked) {
+                            setIsAlreadyBooked(true);
+                        }
                     }
                 } else {
                     toast.error("Class not found!");
@@ -78,7 +87,7 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
         }
     };
 
-    const handleBooking = () => {
+    const handleBooking = async () => {
         if (!currentUser) {
             toast.error("Please login first to book a class!");
             return;
@@ -89,10 +98,36 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
             return;
         }
 
-        toast.loading("Redirecting to checkout...", { duration: 1000 });
-        setTimeout(() => {
-            router.push(`/payment?classId=${singleClass._id}`);
-        }, 1000);
+        try {
+            setBookingLoading(true);
+            const loadingToast = toast.loading("Redirecting to Stripe checkout...");
+
+            const res = await fetch('/api/checkout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    classId: singleClass._id,
+                    className: singleClass.className,
+                    price: singleClass.price,
+                    image: singleClass.image,
+                    userEmail: currentUser.email 
+                })
+            });
+
+            const data = await res.json();
+            toast.dismiss(loadingToast);
+
+            if (data.url) {
+                window.location.href = data.url;
+            } else {
+                toast.error(data.error || "Failed to initiate payment session.");
+            }
+        } catch (error) {
+            console.error("Stripe Checkout Error:", error);
+            toast.error("Something went wrong with Stripe checkout.");
+        } finally {
+            setBookingLoading(false);
+        }
     };
 
     if (loading) {
@@ -127,9 +162,9 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
-                    {/* Left & Middle Column: Banner & Info */}
+                    {/* Left & Middle Column Banner & Info */}
                     <div className="lg:col-span-2 space-y-6">
-                        {/* Class Thumbnail */}
+                      
                         <div className="relative w-full aspect-video border border-zinc-900 rounded-xs overflow-hidden bg-zinc-950 shadow-2xl group">
                             <img
                                 src={singleClass.image}
@@ -142,7 +177,7 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
                             </span>
                         </div>
 
-                        {/* Title  */}
+                        {/* Title */}
                         <div className="bg-zinc-900/10 backdrop-blur-xs border border-zinc-900/80 p-6 sm:p-8 space-y-6 rounded-xs">
                             <div className="space-y-3">
                                 <h1 className="text-2xl sm:text-4xl font-display font-black uppercase tracking-tight text-white leading-tight">
@@ -163,18 +198,18 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
                         </div>
                     </div>
 
-                    {/* Right Column: Dynamic Action Sidebar card */}
+                    {/* Right Column Sidebar */}
                     <div className="lg:sticky lg:top-24 space-y-6">
                         <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-900 p-6 space-y-6 rounded-xs shadow-xl">
 
-                            {/* Price & Booking Counter Details */}
+                            {/* Price & Booking Details */}
                             <div className="border-b border-zinc-800/80 pb-5 space-y-4">
                                 <div className="flex justify-between items-baseline">
                                     <span className="font-display text-xs font-bold text-zinc-500 uppercase tracking-wider">Registration Fee</span>
                                     <span className="text-3xl font-display font-black text-flexuraNeon">${singleClass.price}</span>
                                 </div>
                                 
-                                {/* Dynamic Booking/Enrollment Counter */}
+                                {/* Booking Count */}
                                 <div className="flex items-center justify-between bg-zinc-950/80 border border-zinc-900 px-3 py-2.5 rounded-xs">
                                     <span className="text-[11px] uppercase tracking-wider font-display font-semibold text-zinc-400 flex items-center gap-2">
                                         <FaUsers className="text-flexuraNeon/70" size={14} /> Total Enrolled
@@ -216,19 +251,22 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
                                 </div>
                             </div>
 
-                            {/* CTA Action Buttons */}
+                            {/*  CTA Action Buttons */}
                             <div className="pt-4 space-y-3">
                                 <button
                                     onClick={handleBooking}
-                                    disabled={isAlreadyBooked}
-                                    className={`w-full py-3.5 text-xs uppercase font-display font-black tracking-widest text-center transition-all rounded-xs ${isAlreadyBooked
-                                        ? "bg-zinc-900 text-zinc-600 border border-zinc-800 cursor-not-allowed flex items-center justify-center gap-2"
-                                        : "bg-flexuraNeon text-black hover:bg-white font-black shadow-lg shadow-flexuraNeon/10 hover:shadow-white/5 active:scale-[0.99]"
-                                        }`}
+                                    disabled={isAlreadyBooked || bookingLoading}
+                                    className={`w-full py-3.5 text-xs uppercase font-display font-black tracking-widest text-center transition-all rounded-xs flex items-center justify-center gap-2 ${
+                                        isAlreadyBooked
+                                            ? "bg-zinc-900 text-zinc-600 border border-zinc-800 cursor-not-allowed font-bold"
+                                            : "bg-flexuraNeon text-black hover:bg-white active:scale-[0.99] font-black shadow-lg shadow-flexuraNeon/10"
+                                    }`}
                                 >
-                                    {isAlreadyBooked ? (
+                                    {bookingLoading ? (
+                                        <FaSpinner className="animate-spin text-black" size={14} />
+                                    ) : isAlreadyBooked ? (
                                         <>
-                                            <FaCheckCircle className="text-zinc-500" size={12} /> Already Booked
+                                            <FaCheckCircle className="text-sky-500" size={14} /> Already Booked
                                         </>
                                     ) : (
                                         "Book Now"
@@ -241,13 +279,9 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
                                     className="w-full py-3 bg-transparent border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-900/40 hover:border-zinc-700 transition-all text-xs uppercase font-display font-bold tracking-wider flex items-center justify-center gap-2 disabled:opacity-50 rounded-xs"
                                 >
                                     {isFavorite ? (
-                                        <>
-                                            <FaHeart className="text-red-500" size={12} /> Saved to Favorites
-                                        </>
+                                        <><FaHeart className="text-red-500" size={12} /> Saved to Favorites</>
                                     ) : (
-                                        <>
-                                            <FaRegHeart className="text-zinc-500" size={12} /> Add to Favorites
-                                        </>
+                                        <><FaRegHeart className="text-zinc-500" size={12} /> Add to Favorites</>
                                     )}
                                 </button>
                             </div>
