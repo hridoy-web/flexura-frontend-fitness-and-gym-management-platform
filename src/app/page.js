@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import CoreInfrastructure from "@/components/home/CoreInfrastructure";
 import EliteTrainers from "@/components/home/EliteTrainers";
 import FeaturedClasses from "@/components/home/FeaturedClasses";
