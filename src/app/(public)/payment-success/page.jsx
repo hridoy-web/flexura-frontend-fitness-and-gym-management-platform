@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, use } from "react";
+import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FaCheckCircle, FaSpinner, FaArrowRight, FaReceipt, FaTimesCircle } from "react-icons/fa";
 import { saveBookingInfo } from "@/lib/actions/bookingActions";
@@ -11,6 +11,7 @@ export default function PaymentSuccessPage() {
     
     const sessionId = searchParams.get("session_id");
     const classId = searchParams.get("classId");
+    const price = searchParams.get("price"); 
     
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState("processing");
@@ -19,7 +20,6 @@ export default function PaymentSuccessPage() {
     useEffect(() => {
         const fetchLoggedUser = async () => {
             try {
-
                 const emailParam = searchParams.get("email") || "authenticated_user@flexura.com"; 
                 setUserEmail(emailParam);
                 return emailParam;
@@ -40,10 +40,12 @@ export default function PaymentSuccessPage() {
                 setLoading(true);
                 const currentEmail = await fetchLoggedUser();
 
+                // bookingData 
                 const bookingData = {
                     sessionId: sessionId,
                     classId: classId,
-                    userEmail: currentEmail
+                    userEmail: currentEmail,
+                    price: price ? Number(price) : 0 
                 };
 
                 const result = await saveBookingInfo(bookingData);
@@ -71,7 +73,7 @@ export default function PaymentSuccessPage() {
         };
 
         verifyAndSaveToDb();
-    }, [sessionId, classId, searchParams]);
+    }, [sessionId, classId, price, searchParams]); 
 
     if (loading) {
         return (
@@ -88,7 +90,6 @@ export default function PaymentSuccessPage() {
     return (
         <div className="min-h-screen bg-black text-zinc-100 flex items-center justify-center p-4 selection:bg-flexuraNeon selection:text-black">
             <div className="max-w-md w-full bg-zinc-900/30 backdrop-blur-md border border-zinc-900 p-8 rounded-xs text-center space-y-6 shadow-2xl relative overflow-hidden">
-                
                 <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-flexuraNeon to-transparent"></div>
 
                 {status === "success" ? (
@@ -117,6 +118,10 @@ export default function PaymentSuccessPage() {
                                 <span className="text-zinc-300 font-medium truncate max-w-[180px]">{userEmail || "N/A"}</span>
                             </div>
                            
+                            <div className="flex justify-between">
+                                <span className="text-zinc-500">Amount Paid:</span>
+                                <span className="text-flexuraNeon font-bold">${price || 0}</span>
+                            </div>
                         </div>
 
                         <div className="pt-2">
@@ -141,7 +146,7 @@ export default function PaymentSuccessPage() {
                                 Verification Failed
                             </h1>
                             <p className="text-zinc-400 text-sm leading-relaxed">
-                                Could not automatically save your booking info to MongoDB. If your balance was deducted, please contact support with your Session ID.
+                               We encountered an issue syncing your schedule. If your payment was completed, please contact our support desk with your Session ID for manual verification.
                             </p>
                         </div>
 

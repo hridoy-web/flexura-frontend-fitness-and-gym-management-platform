@@ -42,8 +42,9 @@ export async function POST(request) {
                 userEmail: user?.email
             },
             mode: 'payment',
-            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}&classId=${body.classId}&email=${body.userEmail}`,
-            cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/classes/${body.classId}`,
+
+            success_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment-success?session_id={CHECKOUT_SESSION_ID}&classId=${classId}&email=${user?.email}&price=${price}`,
+            cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/classes/${classId}`,
         });
 
         return NextResponse.json({ url: session.url });

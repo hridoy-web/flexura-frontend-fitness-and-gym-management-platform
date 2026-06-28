@@ -1,3 +1,5 @@
+'use server'
+
 import { fetchFromBackend } from "@/lib/serverApi";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_SERVER_URL;
@@ -8,7 +10,7 @@ export const getTrainerOverview = async (email) => {
         const response = await fetch(`${BACKEND_URL}/api/trainer/overview/${email}`, {
             cache: "no-store",
         });
-        
+
         if (!response.ok) return null;
         const result = await response.json();
         return result.success ? result.stats : null;

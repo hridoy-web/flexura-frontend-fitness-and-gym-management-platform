@@ -1,3 +1,5 @@
+"use server"
+
 import { fetchFromBackend } from "../serverApi";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_SERVER_URL;
