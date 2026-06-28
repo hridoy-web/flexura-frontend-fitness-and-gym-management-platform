@@ -121,7 +121,7 @@ export default function PaymentSuccessPage() {
 
                         <div className="pt-2">
                             <button
-                                onClick={() => router.push("/dashboard/booked-classes")}
+                                onClick={() => router.push("/dashboard/user/booked-classes")}
                                 className="w-full py-3 bg-flexuraNeon text-black hover:bg-white text-xs uppercase font-display font-black tracking-widest transition-all rounded-xs flex items-center justify-center gap-2 group"
                             >
                                 Go to Dashboard <FaArrowRight className="group-hover:translate-x-1 transition-transform" size={12} />

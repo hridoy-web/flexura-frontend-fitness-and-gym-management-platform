@@ -15,6 +15,9 @@ export default function Navbar() {
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
+  if (pathname.includes('dashboard')) {
+    return null;
+  }
   // console.log(user);
 
   const handleLogOut = async () => {

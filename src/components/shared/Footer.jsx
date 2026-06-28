@@ -1,19 +1,26 @@
 "use client";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { FaXTwitter, FaFacebookF, FaInstagram, FaLinkedinIn } from "react-icons/fa6";
 import { HiOutlineMail, HiOutlinePhone, HiOutlineLocationMarker } from "react-icons/hi";
 
 export default function Footer() {
+  const pathname = usePathname()
+
+  if (pathname.includes('dashboard')) {
+    return null;
+  }
+
   const currentYear = new Date().getFullYear();
 
   return (
     <footer className="bg-zinc-950 border-t border-zinc-900 pt-16 pb-8 relative overflow-hidden">
-    
+
       <div className="absolute bottom-0 right-0 w-80 h-80 bg-flexuraPurple/5 rounded-full blur-3xl pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
-          
+
           {/*Logo & About */}
           <div className="flex flex-col gap-4">
             <Link href="/" className="inline-block">
@@ -29,7 +36,7 @@ export default function Footer() {
               <a href="#" className="w-9 h-9 flex items-center justify-center bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-flexuraNeon hover:border-flexuraNeon transition-all duration-300 rounded-none">
                 <FaFacebookF size={16} />
               </a>
-            
+
               <a href="#" className="w-9 h-9 flex items-center justify-center bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-flexuraNeon hover:border-flexuraNeon transition-all duration-300 rounded-none">
                 <FaXTwitter size={16} />
               </a>
