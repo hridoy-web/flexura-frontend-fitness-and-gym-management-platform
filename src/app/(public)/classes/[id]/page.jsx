@@ -7,6 +7,7 @@ import { FaCalendarAlt, FaClock, FaHeart, FaRegHeart, FaUser, FaDumbbell, FaArro
 import toast from "react-hot-toast";
 
 export default function ClassDetailsPage({ params: paramsPromise }) {
+
     const params = use(paramsPromise);
     const classId = params.id;
     const router = useRouter();
