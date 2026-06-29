@@ -11,18 +11,18 @@ export default function MyClassesPage() {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  /* Modal state */
   const [selectedClass, setSelectedClass] = useState(null);
   const [students, setStudents] = useState([]);
   const [studentsLoading, setStudentsLoading] = useState(false);
   const [showStudentsModal, setShowStudentsModal] = useState(false);
 
-  /* Edit class states */
   const [editClass, setEditClass] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editLoading, setEditLoading] = useState(false);
 
-  /* Toast state */
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [classToDelete, setClassToDelete] = useState(null);
+
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
 
@@ -35,7 +35,6 @@ export default function MyClassesPage() {
     "Calisthenics"
   ];
 
-  /* Fetch classes  */
   const fetchClasses = async () => {
     if (!session?.user?.email) return;
     try {
@@ -53,21 +52,24 @@ export default function MyClassesPage() {
     fetchClasses();
   }, [session]);
 
-  /* Handle class delete*/
-  const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this class permanently?")) return;
+  const confirmDelete = (id) => {
+    setClassToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const executeDelete = async () => {
     try {
-      const res = await deleteTrainerClass(id);
+      const res = await deleteTrainerClass(classToDelete);
       if (res.success) {
-        setClasses(classes.filter((c) => c._id !== id));
+        setClasses(classes.filter((c) => c._id !== classToDelete));
         triggerToast("Class deleted successfully.");
+        setShowDeleteModal(false);
       }
     } catch (error) {
       console.error(error);
     }
   };
 
-  /* Open booked student register */
   const handleOpenStudents = async (id, className) => {
     setSelectedClass(className);
     setShowStudentsModal(true);
@@ -82,13 +84,11 @@ export default function MyClassesPage() {
     }
   };
 
-  /* Open edit state modal  */
   const handleOpenEdit = (item) => {
     setEditClass({ ...item });
     setShowEditModal(true);
   };
 
-  /* Show floating notification */
   const triggerToast = (message) => {
     setToastMessage(message);
     setShowToast(true);
@@ -97,7 +97,6 @@ export default function MyClassesPage() {
     }, 4000);
   };
 
-  /* Handle class specification update */
   const handleUpdateSubmit = async (e) => {
     e.preventDefault();
     setEditLoading(true);
@@ -126,7 +125,6 @@ export default function MyClassesPage() {
 
   return (
     <div className="space-y-8">
-      {/* Custom Styles for animations */}
       <style>{`
         @keyframes slideInUp {
           from { transform: translateY(100%) scale(0.95); opacity: 0; }
@@ -178,7 +176,6 @@ export default function MyClassesPage() {
                       </div>
                     </div>
                   </td>
-
                   <td className="py-5 px-6">
                     <div className="flex items-center gap-1.5 text-xs text-zinc-300">
                       <FaCalendarAlt className="text-zinc-500" size={11} />
@@ -186,18 +183,16 @@ export default function MyClassesPage() {
                     </div>
                     <div className="text-[10px] text-zinc-500 mt-1">Slot: {item.time} ({item.duration} mins)</div>
                   </td>
-
                   <td className="py-5 px-6">
                     <span className={`text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded border ${item.status === "approved" ? "border-emerald-500/20 text-emerald-400 bg-emerald-500/5" : "border-yellow-500/20 text-yellow-500 bg-yellow-500/5 animate-pulse"}`}>
                       {item.status}
                     </span>
                   </td>
-
                   <td className="py-5 px-6 text-right">
                     <div className="flex items-center justify-end gap-2.5">
                       <button onClick={() => handleOpenStudents(item._id, item.className)} className="p-2.5 text-flexuraNeon hover:text-white border border-zinc-900 hover:border-flexuraNeon/30 hover:bg-flexuraNeon/10 rounded-xl transition" title="View Enrolled Students"><FaUsers size={12} /></button>
                       <button onClick={() => handleOpenEdit(item)} className="p-2.5 text-emerald-400 hover:text-white border border-zinc-900 hover:border-emerald-500/30 hover:bg-emerald-500/10 rounded-xl transition" title="Edit Class"><FaEdit size={12} /></button>
-                      <button onClick={() => handleDelete(item._id)} className="p-2.5 text-rose-500 hover:text-white border border-zinc-900 hover:border-rose-500/30 hover:bg-rose-500/10 rounded-xl transition" title="Delete Class"><FaTrash size={12} /></button>
+                      <button onClick={() => confirmDelete(item._id)} className="p-2.5 text-rose-500 hover:text-white border border-zinc-900 hover:border-rose-500/30 hover:bg-rose-500/10 rounded-xl transition" title="Delete Class"><FaTrash size={12} /></button>
                     </div>
                   </td>
                 </tr>
@@ -207,17 +202,14 @@ export default function MyClassesPage() {
         </div>
       )}
 
-      {}
       {showStudentsModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fade-in">
           <div className="w-full max-w-lg rounded-2xl border border-zinc-900 bg-zinc-950 p-6 md:p-8 relative space-y-6">
             <button onClick={() => { setShowStudentsModal(false); setStudents([]); }} className="absolute top-4 right-4 text-zinc-500 hover:text-white transition"><FaTimes size={16} /></button>
-            
             <div>
               <h3 className="text-lg font-black text-zinc-100 uppercase tracking-widest font-display">Class Registry</h3>
               <p className="text-[10px] text-flexuraNeon uppercase tracking-widest font-black font-display mt-0.5">{selectedClass}</p>
             </div>
-
             <div className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
               {studentsLoading ? (
                 <div className="py-12 flex flex-col items-center justify-center gap-3"><FaSpinner className="text-flexuraNeon animate-spin text-2xl" /><p className="text-[10px] text-zinc-600 font-display uppercase tracking-widest">Accessing profiles...</p></div>
@@ -241,7 +233,6 @@ export default function MyClassesPage() {
         </div>
       )}
 
-      {}
       {showEditModal && editClass && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto custom-scrollbar animate-fade-in">
           <div className="w-full max-w-2xl rounded-2xl border border-zinc-900 bg-zinc-950 p-6 md:p-8 relative space-y-6">
@@ -250,7 +241,6 @@ export default function MyClassesPage() {
               <h3 className="text-lg font-black text-zinc-100 uppercase tracking-widest font-display">Edit Class Specifications</h3>
               <p className="text-[9px] text-zinc-500 uppercase tracking-widest font-display mt-1">Configuring: {editClass.className}</p>
             </div>
-
             <form onSubmit={handleUpdateSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-[9px] font-black uppercase text-zinc-500 font-display">Class Name</label>
@@ -288,7 +278,6 @@ export default function MyClassesPage() {
                 <label className="text-[9px] font-black uppercase text-zinc-500 font-display">Description</label>
                 <textarea rows={3} required value={editClass.description} onChange={(e) => setEditClass({ ...editClass, description: e.target.value })} className="w-full bg-zinc-900 border border-zinc-800 focus:border-emerald-500/50 rounded-xl px-3 py-2.5 text-xs text-zinc-100 focus:outline-none transition resize-none" />
               </div>
-
               <button type="submit" disabled={editLoading} className="sm:col-span-2 mt-2 py-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 hover:bg-emerald-500/25 transition text-emerald-400 text-xs font-black tracking-widest uppercase font-display disabled:opacity-50">
                 {editLoading ? <FaSpinner className="animate-spin text-emerald-400 mx-auto" size={14} /> : "Update Class Matrix"}
               </button>
@@ -297,26 +286,34 @@ export default function MyClassesPage() {
         </div>
       )}
 
-      {}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-zinc-950 border border-zinc-900 p-6 rounded-2xl max-w-sm w-full space-y-4">
+            <h3 className="text-white font-bold">Delete Class?</h3>
+            <p className="text-zinc-400 text-xs">Are you sure you want to permanently remove this class? This action cannot be undone.</p>
+            <div className="flex gap-3 pt-4">
+              <button onClick={() => setShowDeleteModal(false)} className="flex-1 py-2 text-xs text-zinc-400 border border-zinc-800 rounded-xl">Cancel</button>
+              <button onClick={executeDelete} className="flex-1 py-2 text-xs bg-rose-600 text-white rounded-xl">Confirm Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showToast && (
         <div className="fixed bottom-6 right-6 z-50 max-w-sm w-full bg-zinc-950/95 backdrop-blur-md border border-emerald-500/30 rounded-2xl p-4 shadow-[0_0_20px_rgba(16,185,129,0.15)] flex items-start gap-3 animate-slide-up overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-[2.5px] bg-gradient-to-r from-emerald-500 to-teal-400" />
-          
           <div className="p-2 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-emerald-400 shrink-0">
             <FaCheckCircle size={16} />
           </div>
-
           <div className="flex-1 space-y-0.5">
             <h4 className="text-[10px] font-black uppercase tracking-widest text-zinc-400 font-display">System Status</h4>
             <p className="text-[11px] text-zinc-200 uppercase font-display tracking-wider font-bold">
               {toastMessage}
             </p>
           </div>
-
           <button onClick={() => setShowToast(false)} className="text-zinc-600 hover:text-zinc-300 transition shrink-0 mt-0.5">
             <FaTimes size={10} />
           </button>
-
           <div className="absolute bottom-0 left-0 h-[2px] bg-emerald-500 animate-progress-bar" />
         </div>
       )}

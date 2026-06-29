@@ -9,7 +9,7 @@ const trainers = [
         role: "Head Coach / Biomechanics Specialist",
         specialty: "Powerlifting & Hypertrophy",
         experience: "8+ Years Experience",
-        image: "https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=600&auto=format&fit=crop",
+        image: "/images/trainer-3.jpg",
     },
     {
         id: 2,
@@ -17,7 +17,7 @@ const trainers = [
         role: "Elite Tactical Trainer",
         specialty: "High-Intensity Cardio & Calisthenics",
         experience: "6+ Years Experience",
-        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=600&auto=format&fit=crop",
+        image: "/images/girl-trainer-2.jpg",
     },
     {
         id: 3,
@@ -25,7 +25,7 @@ const trainers = [
         role: "Kinesiology Expert",
         specialty: "Functional Mobility & Shredding",
         experience: "5+ Years Experience",
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=600&auto=format&fit=crop",
+        image: "/images/trainer-1.jpg",
     }
 ];
 
