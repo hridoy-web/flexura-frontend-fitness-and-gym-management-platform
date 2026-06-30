@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { FaCheckCircle, FaSpinner, FaArrowRight, FaReceipt, FaTimesCircle } from "react-icons/fa";
 import { saveBookingInfo } from "@/lib/actions/bookingActions";
@@ -8,19 +8,21 @@ import toast from "react-hot-toast";
 export default function PaymentSuccessPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    
+
     const sessionId = searchParams.get("session_id");
     const classId = searchParams.get("classId");
-    const price = searchParams.get("price"); 
-    
+    const price = searchParams.get("price");
+
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState("processing");
     const [userEmail, setUserEmail] = useState("");
 
+    const hasEffectRun = useRef(false);
+
     useEffect(() => {
         const fetchLoggedUser = async () => {
             try {
-                const emailParam = searchParams.get("email") || "authenticated_user@flexura.com"; 
+                const emailParam = searchParams.get("email") || "authenticated_user@flexura.com";
                 setUserEmail(emailParam);
                 return emailParam;
             } catch (err) {
@@ -35,45 +37,63 @@ export default function PaymentSuccessPage() {
             return;
         }
 
+       
+        if (hasEffectRun.current) return;
+
         const verifyAndSaveToDb = async () => {
             try {
+                hasEffectRun.current = true;
                 setLoading(true);
                 const currentEmail = await fetchLoggedUser();
 
-                // bookingData 
                 const bookingData = {
                     sessionId: sessionId,
                     classId: classId,
                     userEmail: currentEmail,
-                    price: price ? Number(price) : 0 
+                    price: price ? Number(price) : 0
                 };
 
                 const result = await saveBookingInfo(bookingData);
 
-                if (result.success) {
+             
+                if (result && result.success) {
                     setStatus("success");
-                    toast.success("Payment Successful Congratulations");
-                } else {
-                    console.error("Database entry failed:", result.message);
-            
-                    if (result.message?.includes("Already recorded")) {
+                    toast.success("Payment Successful! Congratulations");
+                }
+
+                else {
+                    console.log("Server response on duplicate/error check:", result);
+
+                    const errorStr = JSON.stringify(result).toLowerCase();
+
+                    if (
+                        errorStr.includes("already") ||
+                        errorStr.includes("duplicate") ||
+                        errorStr.includes("recorded") ||
+                        errorStr.includes("e11000")
+                    ) {
                         setStatus("success");
                     } else {
                         setStatus("error");
-                        toast.error(result.message || "Failed to save booking info.");
+                        toast.error(result?.message || "Failed to sync transaction info.");
                     }
                 }
             } catch (error) {
-                console.error("Verification processing error:", error.message);
-                setStatus("error");
-                toast.error("An error occurred during verification.");
+                console.error("Verification processing error:", error);
+                const catchErrorStr = error.message?.toLowerCase() || "";
+                if (catchErrorStr.includes("already") || catchErrorStr.includes("duplicate")) {
+                    setStatus("success");
+                } else {
+                    setStatus("error");
+                    toast.error("An error occurred during verification.");
+                }
             } finally {
                 setLoading(false);
             }
         };
 
         verifyAndSaveToDb();
-    }, [sessionId, classId, price, searchParams]); 
+    }, [sessionId, classId, price, searchParams]);
 
     if (loading) {
         return (
@@ -117,7 +137,7 @@ export default function PaymentSuccessPage() {
                                 <span className="text-zinc-500">User Email:</span>
                                 <span className="text-zinc-300 font-medium truncate max-w-[180px]">{userEmail || "N/A"}</span>
                             </div>
-                           
+
                             <div className="flex justify-between">
                                 <span className="text-zinc-500">Amount Paid:</span>
                                 <span className="text-flexuraNeon font-bold">${price || 0}</span>
@@ -146,7 +166,7 @@ export default function PaymentSuccessPage() {
                                 Verification Failed
                             </h1>
                             <p className="text-zinc-400 text-sm leading-relaxed">
-                               We encountered an issue syncing your schedule. If your payment was completed, please contact our support desk with your Session ID for manual verification.
+                                We encountered an issue syncing your schedule. If your payment was completed, please contact our support desk with your Session ID for manual verification.
                             </p>
                         </div>
 

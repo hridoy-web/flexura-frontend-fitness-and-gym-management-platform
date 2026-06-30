@@ -8,9 +8,6 @@ export default async function TransactionsPage() {
     const payments = data?.payments || [];
     const totalRevenue = data?.totalRevenue || 0;
 
-    console.log(payments, "payment");
-    console.log(totalRevenue, 'total');
-
     return (
         <div className="space-y-8 p-6 min-h-screen bg-black text-zinc-100">
             

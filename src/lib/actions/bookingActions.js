@@ -23,15 +23,17 @@ export const checkBookingStatus = async (classId, email) => {
 export const saveBookingInfo = async (bookingData) => {
     try {
         const res = await fetch(`${BACKEND_URL}/api/bookings/save`, {
-
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(bookingData),
         });
 
-        if (!res.ok) throw new Error("Failed to save booking");
-
         const data = await res.json();
+
+        if (!res.ok) {
+            throw new Error(data.message || "Failed to save booking");
+        }
+
         return data;
 
     } catch (error) {

@@ -34,7 +34,6 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
                     setCurrentUser(response.user);
 
                     if (response.user?.email) {
-
                         const favStatus = await checkIsFavorite(classId, response.user.email);
                         setIsFavorite(favStatus);
 
@@ -88,9 +87,22 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
         }
     };
 
+    // Handle class enrollment booking and restrictions
     const handleBooking = async () => {
         if (!currentUser) {
             toast.error("Please login first to book a class!");
+            return;
+        }
+
+        //  cannot purchase your own class
+        if (currentUser.role === "trainer" && singleClass.trainerEmail === currentUser.email) {
+            toast.error("You cannot purchase your own class!");
+            return;
+        }
+
+        // Restriction: Only users can purchase classes
+        if (currentUser.role === "trainer" || currentUser.role === "admin") {
+            toast.error("Only users can purchase classes");
             return;
         }
 
@@ -153,7 +165,7 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
         <div className="min-h-screen bg-black text-zinc-100 py-12 px-4 sm:px-6 md:px-8 selection:bg-flexuraNeon selection:text-black">
             <div className="max-w-6xl mx-auto">
 
-                {/* Back Button */}
+                {/* Back Navigation */}
                 <button
                     onClick={() => router.back()}
                     className="group flex items-center gap-2.5 text-zinc-400 hover:text-flexuraNeon transition-colors text-xs uppercase font-display tracking-wider mb-8"
@@ -163,7 +175,7 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
 
-                    {/* Left & Middle Column Banner & Info */}
+                    {/* Left Banner & Overview Column */}
                     <div className="lg:col-span-2 space-y-6">
                       
                         <div className="relative w-full aspect-video border border-zinc-900 rounded-xs overflow-hidden bg-zinc-950 shadow-2xl group">
@@ -178,7 +190,7 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
                             </span>
                         </div>
 
-                        {/* Title */}
+                        {/* Class Meta Titles */}
                         <div className="bg-zinc-900/10 backdrop-blur-xs border border-zinc-900/80 p-6 sm:p-8 space-y-6 rounded-xs">
                             <div className="space-y-3">
                                 <h1 className="text-2xl sm:text-4xl font-display font-black uppercase tracking-tight text-white leading-tight">
@@ -187,7 +199,7 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
                                 <div className="w-14 h-[3px] bg-flexuraNeon"></div>
                             </div>
                             
-                            {/* Description */}
+                            {/* Class Main Description */}
                             <div className="space-y-3 pt-2">
                                 <h2 className="text-sm font-display font-bold uppercase tracking-wider text-zinc-200 flex items-center gap-2">
                                     <FaBookOpen className="text-flexuraNeon" size={18} /> Course Overview
@@ -199,18 +211,18 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
                         </div>
                     </div>
 
-                    {/* Right Column Sidebar */}
+                    {/* Right Sidebar Purchase & Details Column */}
                     <div className="lg:sticky lg:top-24 space-y-6">
                         <div className="bg-zinc-900/30 backdrop-blur-md border border-zinc-900 p-6 space-y-6 rounded-xs shadow-xl">
 
-                            {/* Price & Booking Details */}
+                            {/* Price Metrics */}
                             <div className="border-b border-zinc-800/80 pb-5 space-y-4">
                                 <div className="flex justify-between items-baseline">
                                     <span className="font-display text-xs font-bold text-zinc-500 uppercase tracking-wider">Registration Fee</span>
                                     <span className="text-3xl font-display font-black text-flexuraNeon">${singleClass.price}</span>
                                 </div>
                                 
-                                {/* Booking Count */}
+                                {/* Analytics & Enrollment Data */}
                                 <div className="flex items-center justify-between bg-zinc-950/80 border border-zinc-900 px-3 py-2.5 rounded-xs">
                                     <span className="text-[11px] uppercase tracking-wider font-display font-semibold text-zinc-400 flex items-center gap-2">
                                         <FaUsers className="text-flexuraNeon/70" size={14} /> Total Enrolled
@@ -221,7 +233,7 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
                                 </div>
                             </div>
 
-                            {/* Class Details */}
+                            {/* Core Parameters Information */}
                             <div className="space-y-4 text-xs font-sans">
                                 <div className="flex items-center justify-between text-zinc-400 border-b border-zinc-900 pb-3">
                                     <span className="flex items-center gap-2.5"><FaUser className="text-zinc-600 shrink-0" size={12} /> Trainer</span>
@@ -252,7 +264,7 @@ export default function ClassDetailsPage({ params: paramsPromise }) {
                                 </div>
                             </div>
 
-                            {/*  CTA Action Buttons */}
+                            {/* Primary Action Controls */}
                             <div className="pt-4 space-y-3">
                                 <button
                                     onClick={handleBooking}
