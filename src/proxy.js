@@ -1,10 +1,11 @@
-import { headers } from 'next/headers';
+
 import { NextResponse } from 'next/server';
 import { auth } from './lib/auth';
 
 export async function proxy(request) {
-  const session = await auth.api.getSession({
-    headers: await headers()
+  
+ const session = await auth.api.getSession({
+    headers: request.headers
   });
 
   const { pathname } = request.nextUrl;

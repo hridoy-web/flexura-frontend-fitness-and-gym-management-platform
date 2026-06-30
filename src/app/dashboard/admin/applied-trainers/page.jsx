@@ -23,6 +23,8 @@ export default function TrainerApplicationsPage() {
         }
     };
 
+    const selectedApp = apps.find(app => app._id === selectedId);
+
     return (
         <div className="space-y-8 p-6 min-h-screen bg-black text-zinc-100">
             {/* Header Section */}
@@ -35,11 +37,10 @@ export default function TrainerApplicationsPage() {
                 </p>
             </div>
 
-          
+            {/* Table Section */}
             <div className="bg-zinc-900/20 backdrop-blur-md border border-zinc-900 rounded-xl overflow-hidden shadow-2xl">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-separate border-spacing-0">
-                       
                         <thead className="bg-zinc-950 text-zinc-400 border-b border-zinc-800 text-[11px] font-bold uppercase tracking-wider font-display">
                             <tr>
                                 <th className="p-4 border-b border-zinc-800/80">Applicant Info</th>
@@ -62,7 +63,7 @@ export default function TrainerApplicationsPage() {
                                         key={app._id} 
                                         className="hover:bg-zinc-900/30 transition-all duration-200 group border-b border-zinc-900"
                                     >
-                                        {/*  Name and Email */}
+                                        {/* Name and Email */}
                                         <td className="p-4">
                                             <div className="font-semibold text-zinc-200 group-hover:text-white transition-colors">
                                                 {app.name}
@@ -72,9 +73,14 @@ export default function TrainerApplicationsPage() {
                                             </div>
                                         </td>
 
-                                        {/* Skills */}
-                                        <td className="p-4 text-zinc-400 font-medium max-w-xs truncate">
-                                            {app.skills || "N/A"}
+                            
+                                        <td className="p-4 text-zinc-400 font-medium max-w-xs">
+                                            <div className="text-zinc-200 font-semibold text-xs uppercase tracking-wider text-flexuraNeon">
+                                                {app.trainerApplication?.specialty || "General"}
+                                            </div>
+                                            <div className="text-xs text-zinc-500 mt-0.5">
+                                                Experience: {app.trainerApplication?.experience ? `${app.trainerApplication.experience} Years` : "N/A"}
+                                            </div>
                                         </td>
 
                                         {/* Review Button */}
@@ -94,11 +100,11 @@ export default function TrainerApplicationsPage() {
                 </div>
             </div>
 
-          
-            {selectedId && (
+            {/*  Modal */}
+            {selectedId && selectedApp && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
                     <div className="max-w-md w-full bg-zinc-950 border border-zinc-800 rounded-xl p-6 shadow-2xl relative space-y-6">
-                        {/* Glow Gradient Line */}
+                        
                         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-flexuraNeon to-transparent"></div>
                         
                         {/* Modal Title */}
@@ -107,19 +113,24 @@ export default function TrainerApplicationsPage() {
                                 Evaluation <span className="text-flexuraNeon">Statement</span>
                             </h3>
                             <p className="text-zinc-500 text-xs mt-0.5">
-                                Provide official feedback for candidate profile update notification
+                                Review details and provide administrative feedback for {selectedApp.name}
                             </p>
                         </div>
 
+                        <div className="bg-zinc-900/50 border border-zinc-800/60 rounded-lg p-4 space-y-2">
+                            <h4 className="text-xs font-bold font-display uppercase text-zinc-400 tracking-wider">Candidate Bio / Motivation:</h4>
+                            <p className="text-zinc-300 text-sm leading-relaxed italic font-sans bg-zinc-950/40 p-3 rounded border border-zinc-900">
+                                "{selectedApp.trainerApplication?.bio || "No description provided by the applicant."}"
+                            </p>
+                        </div>
                        
                         <textarea 
-                            className="w-full h-28 p-3 bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-600 rounded-lg text-sm focus:outline-none focus:border-zinc-700 font-sans resize-none transition-all" 
+                            className="w-full h-24 p-3 bg-zinc-900 border border-zinc-800 text-zinc-200 placeholder-zinc-600 rounded-lg text-sm focus:outline-none focus:border-zinc-700 font-sans resize-none transition-all" 
                             placeholder="Write administrative feedback here..."
                             value={feedback}
                             onChange={(e) => setFeedback(e.target.value)}
                         />
 
-                        
                         <div className="flex items-center justify-end gap-2 pt-2">
                             <button 
                                 onClick={() => setSelectedId(null)} 
