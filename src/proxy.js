@@ -102,5 +102,5 @@ export async function proxy(request) {
 }
 
 export const config = {
-  matcher: ['/classes/:path*', '/forum/:path*', '/dashboard/:path*']
+  matcher: ['/classes/:classPath*', '/forum/:forumPath*', '/dashboard/:dashboardPath*']
 };
