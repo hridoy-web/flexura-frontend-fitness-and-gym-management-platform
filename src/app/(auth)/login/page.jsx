@@ -34,8 +34,7 @@ export default function LoginPage() {
             } else {
                 toast.success("Login successful!");
                 setIsLoading(false);
-                router.push('/');
-                router.refresh();
+                window.location.href = "/";
             }
         } catch (err) {
             toast.error("Something went wrong. Please try again!");
